@@ -1,9 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
   const [skipAnim, setSkipAnim] = useState(false);
+  const [activeVideo, setActiveVideo] = useState(1);
+  const video1Ref = useRef(null);
+  const video2Ref = useRef(null);
 
   const pages = [
     {
@@ -27,30 +30,60 @@ export default function Home() {
       title: "MY PROJECTS",
       subtitle: "2. MY-PORTFOLIO",
       content:
-        "my portfolio displayed in a cosmic form, where the user can walk through my portfolio and read information related to me. Built using javascript. github : https://github.com/ayush2810-svg/my-spaceAdv-portfolio",
+        "My portfolio displayed in a cosmic form, where the user can walk through my portfolio and read information related to me. Built using JavaScript. github : https://github.com/ayush2810-svg/my-spaceAdv-portfolio",
     },
     {
       title: "SKILLS",
       subtitle: "",
       content:
-        "💻 Languages: Java, JavaScript(basic), Python(basic)\n🎨 Frontend: React.js, Tailwind CSS\n⚙️ Backend: Node.js\n🤖 AI Tools:OpenAI APIs",
+        "💻 Languages: Java, JavaScript(basic), Python(basic)\n🎨 Frontend: React.js, Tailwind CSS\n⚙️ Backend: Node.js\n🤖 AI Tools: OpenAI APIs",
     },
     {
       title: "CONTACT",
       subtitle: "",
       content:
-        "📧 Email: ayushkulal282@gmail.com\n🌐 GitHub: https://github.com/ayush2810-svg\n💼 LinkedIn: http://www.linkedin.com/in/ayush-kulal-769159374\n💻 leetcode: https://leetcode.com/u/ayushkulal09/",
+        "📧 Email: ayushkulal282@gmail.com\n🌐 GitHub: https://github.com/ayush2810-svg\n💼 LinkedIn: http://www.linkedin.com/in/ayush-kulal-769159374\n💻 Leetcode: https://leetcode.com/u/ayushkulal09/",
     },
   ];
 
   const handleSkip = () => {
-    if (skipAnim) return; // prevent double clicks
+    if (skipAnim) return;
     setSkipAnim(true);
     setTimeout(() => {
       setSkipAnim(false);
       setCurrentPage((prev) => (prev + 1) % pages.length);
-    }, 2000); // matches blackhole animation
+    }, 2000);
   };
+
+  // 🎥 Crossfade background videos
+  useEffect(() => {
+    const current = activeVideo === 1 ? video1Ref.current : video2Ref.current;
+    const next = activeVideo === 1 ? video2Ref.current : video1Ref.current;
+
+    const handleTimeUpdate = () => {
+      if (current && next && current.duration - current.currentTime < 0.8) {
+        // fade in next video slightly before the end
+        next.currentTime = 0;
+        next.play();
+        next.style.opacity = 1;
+
+        setTimeout(() => {
+          current.style.opacity = 0;
+          setActiveVideo(activeVideo === 1 ? 2 : 1);
+        }, 500); // crossfade duration
+      }
+    };
+
+    if (current) {
+      current.addEventListener("timeupdate", handleTimeUpdate);
+    }
+
+    return () => {
+      if (current) {
+        current.removeEventListener("timeupdate", handleTimeUpdate);
+      }
+    };
+  }, [activeVideo]);
 
   const { title, subtitle, content } = pages[currentPage];
 
@@ -64,10 +97,10 @@ export default function Home() {
         backgroundColor: "black",
       }}
     >
-      {/* 🌌 Background Video */}
+      {/* 🌌 Two Background Videos for Crossfade */}
       <video
+        ref={video1Ref}
         autoPlay
-        loop
         muted
         playsInline
         preload="auto"
@@ -80,8 +113,32 @@ export default function Home() {
           objectFit: "cover",
           transform: "translate(-50%, -50%)",
           zIndex: 0,
-          filter: skipAnim ? "blur(8px) brightness(0.7)" : "brightness(0.6) contrast(0.9)",
-          transition: "filter 1.5s ease",
+          opacity: activeVideo === 1 ? 1 : 0,
+          transition: "opacity 1s ease-in-out",
+          filter: "blur(10px) brightness(0.6) contrast(0.9)",
+        }}
+      >
+        <source src="/cosmos.mp4" type="video/mp4" />
+      </video>
+
+      <video
+        ref={video2Ref}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: "translate(-50%, -50%)",
+          zIndex: 0,
+          opacity: activeVideo === 2 ? 1 : 0,
+          transition: "opacity 1s ease-in-out",
+          filter: "blur(10px) brightness(0.6) contrast(0.9)",
         }}
       >
         <source src="/cosmos.mp4" type="video/mp4" />
