@@ -5,8 +5,9 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
   const [skipAnim, setSkipAnim] = useState(false);
   const [activeVideo, setActiveVideo] = useState(1);
-  const video1Ref = useRef(null);
-  const video2Ref = useRef(null);
+  const video1Ref = useRef<HTMLVideoElement | null>(null);
+  const video2Ref = useRef<HTMLVideoElement | null>(null);
+
 
   const pages = [
     {
@@ -65,10 +66,10 @@ export default function Home() {
         // fade in next video slightly before the end
         next.currentTime = 0;
         next.play();
-        next.style.opacity = 1;
+        next.style.opacity = "1";
 
         setTimeout(() => {
-          current.style.opacity = 0;
+          current.style.opacity = "0";
           setActiveVideo(activeVideo === 1 ? 2 : 1);
         }, 500); // crossfade duration
       }
