@@ -80,7 +80,7 @@ export default function Home() {
           objectFit: "cover",
           transform: "translate(-50%, -50%)",
           zIndex: 0,
-          filter: skipAnim ? "blur(8px) brightness(0.7)" : "none",
+          filter: skipAnim ? "blur(8px) brightness(0.7)" : "brightness(0.6) contrast(0.9)",
           transition: "filter 1.5s ease",
         }}
       >
